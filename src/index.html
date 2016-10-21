@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>KnowledgePad</title>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inconsolata|Work+Sans">
+        <link rel="stylesheet" href="css/lib/font-awesome.min.css">
+        <link rel="stylesheet" href="css/default.css">
+        
+        <script src="js/lib/require.js" data-main="js/main.js"></script>
+    </head>
+    <body>
+        <section id="workspace" data-simplebar-direction="vertical">
+            <!-- ko foreach: { data: notes, as: 'note' } -->
+            <article class="note" data-bind="attr: { 'note-id': note.id }">
+                <!-- ko ifnot: note.editing -->
+                <h1 onmouseover="$('.note-actions', this).stop().fadeIn()" onmouseout="$('.note-actions', this).stop().fadeOut()">
+                    <span data-bind="text: note.title"></span>
+                    <ul class="note-actions">
+                        <li title="Edit Note" data-bind="click: $root.EditNote"><i class="fa fa-pencil fa-fw" aria-hidden="true"></i></li>
+                        <li title="Close Note" data-bind="click: $root.CloseNote"><i class="fa fa-times fa-fw" aria-hidden="true"></i></li>
+                    </ul>
+                </h1>
+                <div class="note-tags">
+                    <!-- ko foreach: { data: note.tags, as: 'tag' } -->
+                    <span data-bind="text: tag"></span>
+                    <!-- /ko -->
+                </div>
+                <div class="note-content" data-bind="html: note.htmlContent">
+                </div>
+                <!-- /ko -->
+                <!-- ko if: note.editing -->
+                <h1>
+                    <input type="text" data-bind="textInput: $root.pendingChanges[note.id].title"></span>
+                    <ul class="note-actions">
+                        <li title="Permanently Delete Note" data-bind="click: $root.DeleteNote"><i class="fa fa-trash fa-fw" aria-hidden="true"></i></li>
+                        <li title="Save changes" data-bind="click: $root.SaveEdit"><i class="fa fa-check fa-fw" aria-hidden="true"></i></li>
+                        <li title="Discard changes" data-bind="click: $root.CancelEdit"><i class="fa fa-times fa-fw" aria-hidden="true"></i></li>
+                    </ul>
+                </h1>
+                <input type="text" class="note-tags" data-bind="textInput: $root.pendingChanges[note.id].tags"/>
+                <textarea class="note-content" data-bind="textInput: $root.pendingChanges[note.id].content">
+                </textarea>
+                <!-- /ko -->
+            </article>
+            <!-- /ko -->
+        </section>
+
+        <section id="control-panel">
+            <div id="search">
+                <input type="text" placeholder="Search a note..." data-bind="textInput: searchQuery"/>
+
+                <div id="search-results" data-bind="visible: searchResults().length">
+                    <p class="separator">Search results <i class="fa fa-times fa-fw close" aria-hidden="true" data-bind="click: ClearSearch"></i></p>
+                    <ul id="results-list" data-bind="foreach: { data: searchResults, as: 'result' }">
+                        <li data-bind="click: $root.OpenNote">
+                            <p><span data-bind="text: result.title"></span><br/>
+                            <em>updated <span data-bind="text: result.relativeUpdated"></span></em></p>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <p class="separator">Open notes</p>
+            <p class="empty-list" data-bind="visible: !openNotes().length">Use the search bar to open a note</p>
+            <ul id="open-notes" data-bind="foreach: { data: openNotes, as: 'note' }">
+                <li>
+                    <p><span data-bind="text: note.title"></span><br/>
+                    <em>updated <span data-bind="text: note.relativeUpdated"></span></em></p>
+                </li>
+            </ul>
+
+            <div id="actions">
+                <ul>
+                    <li title="New Note" data-bind="click: CreateNote"><i class="fa fa-plus fa-fw" aria-hidden="true"></i></li>
+                </ul>
+            </div>
+        </section>
+    </body>
+</html>
